@@ -1,0 +1,4 @@
+venv/
+inference/logs/**/*.log
+inference/logs/**/traces/**/*.json
+*.pyc

@@ -1,0 +1,14 @@
+--extra-index-url https://download.pytorch.org/whl/cu121
+
+torch==2.5.1+cu121
+
+numpy==1.26.4
+pandas==2.2.3
+polars==1.9.0
+pyarrow==19.0.1
+vllm==0.7.3
+bitsandbytes==0.45.3
+transformers==4.49.0
+grpcio
+matplotlib
+scipy
