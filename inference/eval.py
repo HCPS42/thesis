@@ -1,4 +1,4 @@
-from datasets import get_dataset
+from our_datasets import get_dataset
 from solver import solve
 from config import params
 
@@ -7,7 +7,6 @@ import json
 from time import time
 import numpy as np
 import pandas as pd
-import os
 
 
 logger = logging.getLogger(__name__)
@@ -53,7 +52,7 @@ def run_bench(
     tokenizer,
     run_name: str,
     problem_id: int = None,
-):  
+):
     logger.debug("starting ...")
     logger.debug(f"run_name: {run_name}")
     logger.debug(f"dataset_name: {dataset_name}")
@@ -62,12 +61,6 @@ def run_bench(
     config_dict = {
         "params": params
     }
-
-    if os.path.exists(f"logs/{run_name}/config.json"):
-        os_config = json.load(open(f"logs/{run_name}/config.json"))
-        assert sorted(os_config.keys()) == sorted(config_dict.keys())
-        for k in os_config.keys():
-            assert os_config[k] == config_dict[k], f"{k}: {os_config[k]} != {config_dict[k]}"
 
     with open(f"logs/{run_name}/config.json", "w") as f:
         json.dump(config_dict, f, indent=4)
@@ -83,44 +76,12 @@ def run_bench(
         logger.debug(f"PROBLEM: {problem['id']}")
         ids.append(problem["id"])
 
-        if os.path.exists(f"logs/{run_name}/summary.csv"):
-            summary_df = pd.read_csv(f"logs/{run_name}/summary.csv")
-            summary_df.set_index("id", inplace=True)
-        else:
-            summary_df = None
-
-        if summary_df is not None and problem["id"] in summary_df.index:
-            logger.debug(f"Found existing results for problem {problem['id']}. Skipping...")
-
-            lengths_df = pd.read_csv(f"logs/{run_name}/lengths.csv")    
-            lengths_df.set_index("id", inplace=True)
-
-            times_df = pd.read_csv(f"logs/{run_name}/times.csv")
-            times_df.set_index("id", inplace=True)
-
-            id = problem["id"]
-            all_preds.append(list(
-                map(
-                    lambda x: x[1],
-                    filter(
-                        lambda x: x[0].startswith("try"),
-                        summary_df.loc[id].to_dict().items()
-                    )
-                )
-            ))
-            print(np.array(all_preds).shape)
-            all_final_preds.append(summary_df.loc[id, "consensus"].item())
-            all_lengths.append(lengths_df.loc[id].tolist())
-            all_times.append(times_df.loc[id, "time"].item())
-            continue
-
         start_time = time()
         preds, final_pred, lengths = solve(
             problem=problem["problem"],
             model=model,
             tokenizer=tokenizer,
             params=params,
-            speed="slow",
             run_name=run_name,
             problem_id=problem["id"]
         )

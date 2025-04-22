@@ -35,13 +35,12 @@ if __name__ == "__main__":
     parser.add_argument("--run-name", type=str, default=None)
     parser.add_argument("--dataset", choices=dataset_map.keys(), default="eval")
     parser.add_argument("--problem-id", type=int, default=None)
-    parser.add_argument("--append", action="store_true")
     args = parser.parse_args()
 
     run_name = args.run_name
     assert run_name is not None, "run_name is required"
 
-    if os.path.exists(f"logs/{run_name}") and not args.append:
+    if os.path.exists(f"logs/{run_name}"):
         raise FileExistsError(f"The directory logs/{run_name} already exists. Change the run_name.")
 
     setup_logging(f"logs/{run_name}/terminal.log")

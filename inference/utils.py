@@ -28,17 +28,15 @@ def batch_extract_answers(responses) -> list[int | float]:
     return answers
 
 
-def select_answer(answers: list[int | float]) -> tuple[int | float, float]:
+def select_answer(answers: list[int | float]) -> int | float:
     counter = Counter()
     for answer in answers:
         if answer is not np.nan:
             counter[answer] += 1 + random.random() / 1_000
     if not counter:
-        return np.nan, 0.0
-    
+        return np.nan
     answer = max(counter, key=counter.get)
-    max_count = counter[answer]
-    return answer, max_count
+    return answer
 
 
 def setup_logging(log_name: str = "bench.log"):
