@@ -1,6 +1,5 @@
 params = {
-    #"model_path": "HCPS42/simpo-v1-14b-sft",
-    "model_path": "casperhansen/deepseek-r1-distill-qwen-7b-awq",
+    "model_path": "HCPS42/r1-qwen-7b-simpo-our-awq",
     "devices": "0",
     "gpu_memory_utilization": 0.9,
     "seed": 42,

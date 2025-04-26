@@ -14,7 +14,6 @@ def get_model(params):
         tensor_parallel_size=len(params["devices"].split(",")),
         gpu_memory_utilization=params["gpu_memory_utilization"],
         enable_prefix_caching=True,
-        quantization="awq_marlin",
         seed=params["seed"],
     )
 
