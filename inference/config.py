@@ -1,5 +1,5 @@
 params = {
-    "model_path": "HCPS42/r1-qwen-7b-simpo-our-awq",
+    "model_path": "HCPS42/r1-qwen-14b-simpo",
     "devices": "0",
     "gpu_memory_utilization": 0.9,
     "seed": 42,
