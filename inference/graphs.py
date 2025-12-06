@@ -185,3 +185,113 @@ def compare_configs(configs, n_bootstrap=1000, count_suffixes=False):
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.show()
+
+
+def compare_models(models, num_tries=64, n_bootstrap=100):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    fig.suptitle('Average Solved Problems per Model\nnum_tries = 64')
+
+    colors = ['k', 'k', 'b', 'g', 'k', 'b', 'g', 'r', 'k']
+
+    for idx, name in enumerate(models):
+        max_tokens_list = np.arange(4096, 2048 * 12 + 1, 2048)
+        avg_solved_problems = []
+
+        for max_tokens in max_tokens_list:
+            df, summary, lengths, times = process_run(name, max_tokens, num_tries, n_bootstrap)
+            pb = poisson_binom(df['accuracy'].to_numpy())
+            avg_solved_problems.append(pb.mean())
+
+        color = colors[idx % len(colors)]
+
+        if name.startswith('1.5B'):
+            line_style = '-.'
+        elif name.startswith('7B'):
+            line_style = '-'
+        elif name.startswith('14B'):
+            line_style = '--'
+        elif name.startswith('32B'):
+            line_style = ':'
+        
+        ax.plot(max_tokens_list, avg_solved_problems, marker='o', linestyle=line_style, color=color, label=name)
+
+    ax.set_xlabel('Max Tokens (multiples of 2048)')
+    ax.set_ylabel('Average Solved Problems')
+    ax.legend()
+    ax.grid(True)
+
+    plt.tight_layout()
+    plt.show()
+
+
+def compare_awq(models, num_tries=64, n_bootstrap=100):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    fig.suptitle('Average Solved Problems per Model\nnum_tries = 64')
+
+    colors = ['k', 'orange', 'blue', 'g', 'k', 'orange', 'blue', 'g', 'r']
+
+    for idx, name in enumerate(models):
+        max_tokens_list = np.arange(4096, 2048 * 12 + 1, 2048)
+        avg_solved_problems = []
+
+        for max_tokens in max_tokens_list:
+            df, summary, lengths, times = process_run(name, max_tokens, num_tries, n_bootstrap)
+            pb = poisson_binom(df['accuracy'].to_numpy())
+            avg_solved_problems.append(pb.mean())
+
+        color = colors[idx % len(colors)]
+
+        if name.startswith('7B'):
+            line_style = '-'
+        elif name.startswith('14B'):
+            line_style = '--'
+
+        ax.plot(max_tokens_list, avg_solved_problems, marker='o', linestyle=line_style, color=color, label=name)
+
+    ax.set_xlabel('Max Tokens (multiples of 2048)')
+    ax.set_ylabel('Average Solved Problems')
+    ax.legend()
+    ax.grid(True)
+
+    plt.tight_layout()
+    plt.show()
+
+
+def compare_baseline(configs, n_bootstrap=100):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    fig.suptitle('Average Solved Problems per Model')
+
+    colors = ['r', 'g', 'b', 'r', 'g', 'b', 'r', 'g', 'b', 'r', 'g', 'b']
+
+    for idx, config in enumerate(configs):
+        name = config['run_name']
+        num_tries = config['num_tries']
+
+        max_tokens_list = np.arange(4096, 2048 * 12 + 1, 2048)
+        avg_solved_problems = []
+
+        for max_tokens in max_tokens_list:
+            df, summary, lengths, times = process_run(name, max_tokens, num_tries, n_bootstrap)
+            pb = poisson_binom(df['accuracy'].to_numpy())
+            avg_solved_problems.append(pb.mean())
+
+        color = colors[idx % len(colors)]
+
+        if name.startswith('1.5B'):
+            line_style = '-.'
+        elif name.startswith('7B'):
+            line_style = '-'
+        elif name.startswith('14B'):
+            line_style = '--'
+        elif name.startswith('32B'):
+            line_style = ':'
+        
+        ax.plot(max_tokens_list, avg_solved_problems, marker='o', linestyle=line_style, color=color, label=f'{name}, num_tries={num_tries}')
+
+    ax.set_xlabel('Max Tokens (multiples of 2048)')
+    ax.set_ylabel('Average Solved Problems')
+    ax.legend()
+    ax.grid(True)
+
+    plt.tight_layout()
+    plt.show()
